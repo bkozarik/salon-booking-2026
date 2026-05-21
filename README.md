@@ -170,9 +170,6 @@ Aktuálně permisivní pro MVP. V produkci: klienti nemohou číst cizí rezerva
 **Rate limiting**  
 Veřejné Cloud Functions nemají ochranu proti spamu. V produkci: Firebase App Check + rate limiting middleware.
 
-**Timezone handling**  
-Místo hardcoded `+02:00` ukládat timezone salónu do Firestore konfigurace a používat `date-fns-tz` pro konverze.
-
 **Monitoring & alerting**  
 Sentry pro frontend error tracking, Cloud Monitoring pro Functions latency a error rate, PagerDuty pro kritické alerty.
 
@@ -191,11 +188,9 @@ Unit testy pro algoritmus slotů (nejkritičtější business logika s mnoha edg
 
 | Bug | Závažnost | Popis |
 |-----|-----------|-------|
-| Timezone hardcoded | Střední | Systém předpokládá UTC+2. Při přechodu na letní/zimní čas může dojít k hodinové odchylce. |
 | Algoritmus slotů | Nízká | Načítá všechny rezervace mistra bez date filtru. Pomalé při 1000+ rezervacích. |
 | Kalendář na mobilu | Nízká | Při mnoha mistrech je nutný horizontální scroll, layout není plně optimalizován. |
 | localStorage | Nízká | Repeat booking nefunguje v incognito nebo po vymazání cache. |
-| Race condition UX | Nízká | Při konfliktu transakce zobrazí chybu, ale nenabídne nejbližší volný termín. |
 
 ---
 
@@ -206,23 +201,6 @@ Unit testy pro algoritmus slotů (nejkritičtější business logika s mnoha edg
 | SMS potvrzení | `console.log` | **Twilio** | Spolehlivost, česká čísla, jednoduché Node.js SDK, pay-per-use |
 | Email potvrzení | `console.log` | **SendGrid** | Šablony, analytika doručení, vysoká doručitelnost |
 | SMS připomínka | není | Twilio Scheduled Messages | Stejná platforma jako SMS potvrzení |
-
----
-
-## 🔄 PR — co bych refaktoroval jako první
-
-**Přesunout logiku slotů do sdíleného balíčku s testy**
-
-Aktuálně logika pracovní doby (weeklySchedule + exceptions + timezone) existuje pouze v Cloud Function `getAvailableSlots` a nemá žádné testy. Jde o nejkritičtější business logiku systému.
-
-**Navrhovaný refaktor:**
-1. Vytvořit `packages/scheduling` jako npm workspace package
-2. Extrahovat a otestovat algoritmus (edge cases: svátky, výjimky v rozvrhu, DST přechody)
-3. Importovat v Cloud Function pro autoritativní výpočet
-4. Importovat ve frontendu pro optimistické UI (zobrazit skeleton kalendáře okamžitě)
-5. Přidat `dateString: "2026-05-27"` pole na booking dokumenty → umožní efektivní date-range query bez timezone problémů
-
-**Proč jako první:** Bez testů nelze bezpečně refaktorovat zbytek systému. Tato logika má nejvíce edge cases a nejvyšší dopad na UX při chybě.
 
 ---
 
