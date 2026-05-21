@@ -22,8 +22,6 @@ Fullstack rezervační systém pro kadeřnický salon. Case study pro výběrov�
 
 ---
 
-## 📸 Screenshots
-
 ### Klientská část — výběr služby
 Tříkrokový booking flow — výběr služby, mistra a termínu. Bez registrace, optimalizováno pro mobil.
 
