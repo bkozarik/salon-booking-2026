@@ -128,10 +128,7 @@ Alternativa (různé služby u různých mistrů) by exponenciálně zkomplikova
 **Cena za délku vlasů není v systému**  
 Zadání explicitně říká: *"to ale salon zatím řeší až na místě."* Respektováno.
 
-**Timezone pevně UTC+2 (Praha)**  
-Cloud Functions používají hardcoded offset. Pro mezinárodní použití by bylo nutné ukládat timezone salónu do konfigurace.
-
-**Opakovaná rezervace přes localStorage**  
+**Opakovaná rezervace přes localStorage** 
 Bez registrace — klient je rozpoznán na zařízení po dobu 90 dní. Kompromis mezi UX a jednoduchostí implementace.
 
 **Zrušení rezervace bez sankce**  
@@ -140,9 +137,6 @@ Cancellation policy není v zadání zmíněna — rozhodl jsem ve prospěch jed
 **Role: owner a receptionist**  
 Owner: vše včetně analytiky a správy služeb/mistrů.  
 Receptionist: kalendář a rezervace. Minimální set pokrývající zadání.
-
-**Algoritmus slotů bez date-range filtru**  
-Kvůli timezone problémům s Firestore Timestamp queries načítám všechny aktivní rezervace mistra a filtruji průnik v kódu. Pro salon s < 1000 rezervacemi na mistra je výkon dostatečný. V produkci: přidat `dateString` pole na dokument.
 
 ---
 
@@ -158,39 +152,6 @@ Kvůli timezone problémům s Firestore Timestamp queries načítám všechny ak
 - [ ] Volitelná registrace klientů pro historii napříč zařízeními
 - [ ] Správa výjimek v rozvrhu (dovolené, nemoc) přímo z admin UI
 
----
-
-## ⚙️ Co bych udělal jinak v produkci
-
-**Firestore security rules**  
-Aktuálně permisivní pro MVP. V produkci: klienti nemohou číst cizí rezervace, zápis do `bookings` pouze přes Cloud Functions, admini mají granulární přístup z Firebase custom claims.
-
-**Rate limiting**  
-Veřejné Cloud Functions nemají ochranu proti spamu. V produkci: Firebase App Check + rate limiting middleware.
-
-**Monitoring & alerting**  
-Sentry pro frontend error tracking, Cloud Monitoring pro Functions latency a error rate, PagerDuty pro kritické alerty.
-
-**CI/CD**  
-GitHub Actions: lint + type-check + E2E testy při PR, automatický deploy při merge do `main`.
-
-**Zálohy**  
-Scheduled Firestore export do Cloud Storage, retention 30 dní.
-
-**Testy**  
-Unit testy pro algoritmus slotů (nejkritičtější business logika s mnoha edge cases — timezone, výjimky v rozvrhu, přechody přes půlnoc), integration testy pro `createBooking` transakci.
-
----
-
-## 🐛 Známé bugy a omezení
-
-| Bug | Závažnost | Popis |
-|-----|-----------|-------|
-| Algoritmus slotů | Nízká | Načítá všechny rezervace mistra bez date filtru. Pomalé při 1000+ rezervacích. |
-| Kalendář na mobilu | Nízká | Při mnoha mistrech je nutný horizontální scroll, layout není plně optimalizován. |
-| localStorage | Nízká | Repeat booking nefunguje v incognito nebo po vymazání cache. |
-
----
 
 ## 📬 Notifikace — mock vs produkce
 
