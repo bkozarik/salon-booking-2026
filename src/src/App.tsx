@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import Landing from './client/Landing'
 import BookingFlow from './client/BookingFlow'
 import AdminLogin from './admin/AdminLogin'
 import AdminLayout from './admin/AdminLayout'
@@ -12,10 +13,8 @@ import ProtectedRoute from './shared/components/ProtectedRoute'
 export default function App() {
   return (
     <Routes>
-      {/* Клиентская часть */}
-      <Route path="/" element={<BookingFlow />} />
-
-      {/* Админка */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/booking" element={<BookingFlow />} />
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/admin/*" element={
         <ProtectedRoute>
