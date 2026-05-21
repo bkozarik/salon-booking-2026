@@ -25,7 +25,7 @@ Fullstack rezervační systém pro kadeřnický salon. Case study pro výběrov�
 ## 📸 Screenshots
 
 ### Klientská část — výběr služby
-Tříkrokový booking flow inspirovaný Alteg.io — de facto standard rezervačních systémů pro salóny v regionu.
+Tříkrokový booking flow — výběr služby, mistra a termínu. Bez registrace, optimalizováno pro mobil.
 
 ### Admin — týdenní kalendář
 Real-time kalendář s Firestore `onSnapshot` subscriptions. Změny se projeví okamžitě bez refreshe stránky.
@@ -60,7 +60,7 @@ Klient **nikdy nepíše přímo** do kolekce `bookings`. Tím je fyzicky nemožn
 
 ### Frontend — React + TypeScript + Vite + Tailwind
 
-UX klientské části vychází z Alteg.io — tříkrokový lineární flow minimalizuje kognitivní zátěž. Repeat booking přes `localStorage` (90 dní) umožňuje opakovaným klientům zarezervovat bez zbytečného vyplňování.
+UX klientské části je postaven na tříkrokovém lineárním flow — výběr služby, termínu a zadání kontaktů. Minimalizuje kognitivní zátěž a funguje bez registrace.
 
 ---
 
